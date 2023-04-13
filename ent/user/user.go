@@ -11,6 +11,10 @@ const (
 	FieldAge = "age"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldMetafield holds the string denoting the metafield field in the database.
+	FieldMetafield = "metafield"
+	// FieldOtherfield holds the string denoting the otherfield field in the database.
+	FieldOtherfield = "otherfield"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -20,6 +24,8 @@ var Columns = []string{
 	FieldID,
 	FieldAge,
 	FieldName,
+	FieldMetafield,
+	FieldOtherfield,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

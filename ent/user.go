@@ -3,11 +3,14 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"entgo.io/bug/ent/user"
+	"entgo.io/bug/other"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/schema/field"
 )
 
 // User is the model entity for the User schema.
@@ -19,6 +22,10 @@ type User struct {
 	Age int `json:"age,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Metafield holds the value of the "metafield" field.
+	Metafield field.MetaField `json:"metafield,omitempty"`
+	// Otherfield holds the value of the "otherfield" field.
+	Otherfield other.OtherField `json:"otherfield,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -26,6 +33,8 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case user.FieldMetafield, user.FieldOtherfield:
+			values[i] = new([]byte)
 		case user.FieldID, user.FieldAge:
 			values[i] = new(sql.NullInt64)
 		case user.FieldName:
@@ -63,6 +72,22 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Name = value.String
 			}
+		case user.FieldMetafield:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field metafield", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.Metafield); err != nil {
+					return fmt.Errorf("unmarshal field metafield: %w", err)
+				}
+			}
+		case user.FieldOtherfield:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field otherfield", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.Otherfield); err != nil {
+					return fmt.Errorf("unmarshal field otherfield: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -96,6 +121,12 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(u.Name)
+	builder.WriteString(", ")
+	builder.WriteString("metafield=")
+	builder.WriteString(fmt.Sprintf("%v", u.Metafield))
+	builder.WriteString(", ")
+	builder.WriteString("otherfield=")
+	builder.WriteString(fmt.Sprintf("%v", u.Otherfield))
 	builder.WriteByte(')')
 	return builder.String()
 }

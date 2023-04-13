@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/bug/ent/predicate"
 	"entgo.io/bug/ent/user"
+	"entgo.io/bug/other"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -43,6 +44,18 @@ func (uu *UserUpdate) AddAge(i int) *UserUpdate {
 // SetName sets the "name" field.
 func (uu *UserUpdate) SetName(s string) *UserUpdate {
 	uu.mutation.SetName(s)
+	return uu
+}
+
+// SetMetafield sets the "metafield" field.
+func (uu *UserUpdate) SetMetafield(ff field.MetaField) *UserUpdate {
+	uu.mutation.SetMetafield(ff)
+	return uu
+}
+
+// SetOtherfield sets the "otherfield" field.
+func (uu *UserUpdate) SetOtherfield(of other.OtherField) *UserUpdate {
+	uu.mutation.SetOtherfield(of)
 	return uu
 }
 
@@ -105,6 +118,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.Metafield(); ok {
+		_spec.SetField(user.FieldMetafield, field.TypeJSON, value)
+	}
+	if value, ok := uu.mutation.Otherfield(); ok {
+		_spec.SetField(user.FieldOtherfield, field.TypeJSON, value)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -141,6 +160,18 @@ func (uuo *UserUpdateOne) AddAge(i int) *UserUpdateOne {
 // SetName sets the "name" field.
 func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 	uuo.mutation.SetName(s)
+	return uuo
+}
+
+// SetMetafield sets the "metafield" field.
+func (uuo *UserUpdateOne) SetMetafield(ff field.MetaField) *UserUpdateOne {
+	uuo.mutation.SetMetafield(ff)
+	return uuo
+}
+
+// SetOtherfield sets the "otherfield" field.
+func (uuo *UserUpdateOne) SetOtherfield(of other.OtherField) *UserUpdateOne {
+	uuo.mutation.SetOtherfield(of)
 	return uuo
 }
 
@@ -232,6 +263,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Metafield(); ok {
+		_spec.SetField(user.FieldMetafield, field.TypeJSON, value)
+	}
+	if value, ok := uuo.mutation.Otherfield(); ok {
+		_spec.SetField(user.FieldOtherfield, field.TypeJSON, value)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"entgo.io/bug/ent/user"
+	"entgo.io/bug/other"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -28,6 +29,18 @@ func (uc *UserCreate) SetAge(i int) *UserCreate {
 // SetName sets the "name" field.
 func (uc *UserCreate) SetName(s string) *UserCreate {
 	uc.mutation.SetName(s)
+	return uc
+}
+
+// SetMetafield sets the "metafield" field.
+func (uc *UserCreate) SetMetafield(ff field.MetaField) *UserCreate {
+	uc.mutation.SetMetafield(ff)
+	return uc
+}
+
+// SetOtherfield sets the "otherfield" field.
+func (uc *UserCreate) SetOtherfield(of other.OtherField) *UserCreate {
+	uc.mutation.SetOtherfield(of)
 	return uc
 }
 
@@ -71,6 +84,12 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
 	}
+	if _, ok := uc.mutation.Metafield(); !ok {
+		return &ValidationError{Name: "metafield", err: errors.New(`ent: missing required field "User.metafield"`)}
+	}
+	if _, ok := uc.mutation.Otherfield(); !ok {
+		return &ValidationError{Name: "otherfield", err: errors.New(`ent: missing required field "User.otherfield"`)}
+	}
 	return nil
 }
 
@@ -104,6 +123,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := uc.mutation.Metafield(); ok {
+		_spec.SetField(user.FieldMetafield, field.TypeJSON, value)
+		_node.Metafield = value
+	}
+	if value, ok := uc.mutation.Otherfield(); ok {
+		_spec.SetField(user.FieldOtherfield, field.TypeJSON, value)
+		_node.Otherfield = value
 	}
 	return _node, _spec
 }
